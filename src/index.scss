@@ -1,0 +1,149 @@
+/* index.scss — light-mode only (no dark mode rules) */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* { box-sizing: border-box; }
+
+/* Ensure full viewport and remove default margins */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --panel-bg: rgba(255,255,255,0.96);
+  --panel-radius: 12px;
+  --text-muted: #6c757d;
+  --primary-color: #0b2535;
+  --gap: 16px;
+}
+
+/* Body has the light gradient so there's no white strip at top */
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.4;
+  color: var(--primary-color);
+  background: linear-gradient(120deg, #e8f9f2 0%, #f7fded 50%, #fefbe3 100%);
+  min-height: 100%;
+}
+
+/* Top-level layout */
+.app {
+  min-height: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding: 18px 12px;
+}
+
+/* Central panel styling */
+.center-panel {
+  width: 100%;
+  max-width: 1150px;
+  background: var(--panel-bg);
+  border-radius: var(--panel-radius);
+  padding: 18px;
+  box-shadow: 0 6px 30px rgba(10,20,30,0.06);
+  overflow: hidden;
+}
+
+/* Header/title */
+.app-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.app-header h2 {
+  margin: 0;
+  font-weight: 600;
+  color: inherit;
+  opacity: 1;
+  letter-spacing: 0.2px;
+}
+
+/* Search bar */
+.searchbar .form-control, .searchbar input.form-control {
+  background: #fff;
+  color: var(--primary-color);
+  border-radius: 6px;
+}
+
+/* Main card */
+.main-weather {
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Metric cards */
+.weather-card {
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+  min-height: 88px;
+}
+
+/* Forecast chart card padding */
+.card.p-3.shadow-sm { padding: 12px; }
+
+/* Forecast strip layout: 7 cards in one line by shrinking */
+.forecast-strip {
+  display: flex;
+  gap: var(--gap);
+  align-items: stretch;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  margin: 0 auto;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+}
+
+/* Each day card occupies 1/7th (minus gaps); will shrink to fit */
+.forecast-day {
+  flex: 1 1 calc((100% - (6 * var(--gap))) / 7);
+  min-width: 0;
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1200px) {
+  .forecast-day { padding: 10px; }
+  .center-panel { padding: 14px; }
+}
+
+/* On very small screens permit horizontal scroll */
+@media (max-width: 720px) {
+  .forecast-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .forecast-day {
+    flex: 0 0 140px;
+  }
+}
+
+/* Reduce chart height to avoid vertical overflow */
+.recharts-wrapper, .card svg {
+  max-height: 260px;
+}
+
+/* Helpers */
+.small { font-size: 0.85rem; }
+.display-4 { font-size: 2.4rem; line-height: 1; }
+.text-muted { color: var(--text-muted); }
+
+/* Theme variants (light-only) — weather-based. They only affect panel background if needed */
+.theme-sunny .center-panel { background: var(--panel-bg); }
+.theme-cloudy .center-panel { background: var(--panel-bg); }
+.theme-rainy .center-panel { background: var(--panel-bg); }
+.theme-night .center-panel { background: rgba(255,255,255,0.95); }
+
+/* Safety small margin to avoid rounding white gap in some browsers */
+.center-panel { margin-top: 4px; }

@@ -1,0 +1,192 @@
+/* index.scss — full replacement
+   Fixes: no top white strip, visible header in light mode, consistent backgrounds,
+   center-panel padding, and responsive forecast strip that fits 7 cards in a row.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* { box-sizing: border-box; }
+
+/* Make sure the document and root fill the viewport and have no default margin */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* -- Theme variables ----------------------------------------------------- */
+:root {
+  --panel-bg: rgba(255,255,255,0.96);
+  --panel-radius: 12px;
+  --text-muted: #6c757d;
+  --primary-color: #0b2535;
+  --gap: 16px;
+}
+
+/* Page background: set on body so there is no visible white strip above the app */
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.4;
+  color: var(--primary-color);
+  /* Light mode gradient (body-level) prevents any white strip at top */
+  background: linear-gradient(120deg, #e8f9f2 0%, #f7fded 50%, #fefbe3 100%);
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App wrapper (top-level) fills available area */
+.app {
+  min-height: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding: 18px 12px; /* small padding to keep panel from touching viewport edges */
+}
+
+/* Dark mode applied by adding `app dark` class on top-level wrapper */
+.app.dark {
+  background: linear-gradient(120deg,#0f1724 0%, #112033 50%, #0d1420 100%);
+  color: #e6eef7;
+}
+
+/* Center panel that contains the actual content.
+   It's opaque (not fully transparent) so underlying body gradient doesn't create a white strip effect.
+*/
+.center-panel {
+  width: 100%;
+  max-width: 1150px;
+  background: var(--panel-bg);
+  border-radius: var(--panel-radius);
+  padding: 18px;
+  box-shadow: 0 6px 30px rgba(10,20,30,0.06);
+  overflow: hidden;
+}
+
+/* Dark center panel style */
+.app.dark .center-panel {
+  background: rgba(12,20,30,0.82);
+  color: #e6eef7;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+}
+
+/* Header/title — visible & contrasted in both modes */
+.app-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.app-header h2 {
+  margin: 0;
+  font-weight: 600;
+  color: inherit;
+  opacity: 1;             /* ensure visible in light mode */
+  letter-spacing: 0.2px;
+}
+
+/* Search bar: ensure input contrast */
+.searchbar .form-control, .searchbar input.form-control {
+  background: #fff;
+  color: var(--primary-color);
+  border-radius: 6px;
+}
+
+/* Main card */
+.main-weather {
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* In dark mode make cards subtly translucent */
+.app.dark .main-weather,
+.app.dark .weather-card,
+.app.dark .forecast-day,
+.app.dark .card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Metric cards */
+.weather-card {
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+  min-height: 88px;
+}
+
+/* Forecast chart card */
+.card.p-3.shadow-sm {
+  padding: 12px;
+}
+
+/* Forecast strip: keep on one row by shrinking cards to fit 7 items */
+.forecast-strip {
+  display: flex;
+  gap: var(--gap);
+  align-items: stretch;
+  justify-content: space-between;
+  flex-wrap: nowrap; /* no wrap */
+  margin: 0 auto;
+  padding-bottom: 6px;
+  /* no horizontal scrollbar in normal cases — children shrink to fit */
+  overflow-x: hidden;
+}
+
+/* Each forecast card flexibly takes up 1/7th minus gaps */
+.forecast-day {
+  flex: 1 1 calc((100% - (6 * var(--gap))) / 7);
+  min-width: 0; /* important to allow children to shrink */
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Reduce card padding on smaller screens but keep single-row behavior */
+@media (max-width: 1200px) {
+  .forecast-day { padding: 10px; }
+  .center-panel { padding: 14px; }
+}
+
+/* On very small screens (phones) allow horizontal scroll as a last resort */
+@media (max-width: 720px) {
+  .forecast-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .forecast-day {
+    flex: 0 0 140px;
+  }
+}
+
+/* Make chart height slightly smaller to avoid vertical scrollbar on many laptops */
+.recharts-wrapper, .card svg {
+  max-height: 260px;
+}
+
+/* A few helpers for text sizing and spacing */
+.small { font-size: 0.85rem; }
+.display-4 { font-size: 2.4rem; line-height: 1; }
+.text-muted { color: var(--text-muted); }
+
+/* Buttons & inputs contrast in dark mode */
+.app.dark .btn, .app.dark .form-control {
+  color: #e6eef7;
+}
+
+/* Make sure root inputs don't show white edges in dark mode */
+.app.dark .center-panel input.form-control {
+  background: rgba(255,255,255,0.03);
+  color: #e6eef7;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Avoid unexpected vertical overflow */
+body, .app, .center-panel { overscroll-behavior-y: contain; }
+
+/* Final safety: if any tiny white strip persists due to browser rounding,
+   push the center panel down 4px so gradient remains visible at the top edge */
+.center-panel { margin-top: 4px; }
