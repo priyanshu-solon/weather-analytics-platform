@@ -13,13 +13,16 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
+    "axios": "^1.14.0",
     "bootstrap": "^5.3.8",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.1",
-    "recharts": "^3.1.2",
+    "react-redux": "^9.2.0",
+    "recharts": "^3.8.1",
     "sass": "^1.91.0"
   },
   "devDependencies": {
