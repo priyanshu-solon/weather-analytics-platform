@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --background: #020617; /* Deep Navy */
+  --foreground: #f8fafc;
+}
+
+body {
+  background: radial-gradient(circle at top right, #1e293b, #020617);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for an "Intelligence Platform" feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
