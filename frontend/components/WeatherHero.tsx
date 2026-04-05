@@ -21,9 +21,6 @@ export default function WeatherHero({ data, location }: { data: any, location: s
           <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tighter drop-shadow-lg">
             {location}
           </h2>
-          <p className="text-sm font-bold text-blue-400 uppercase tracking-[0.2em] mt-2">
-            {context.landmarkName}
-          </p>
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
