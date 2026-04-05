@@ -11,6 +11,7 @@ import SearchBar from "@/components/SearchBar";
 import MultiLineChart from "@/components/MultiLineChart";
 import ForecastList from "@/components/ForecastList";
 import PinnedList from "@/components/PinnedList";
+import WeatherInsight from "@/components/WeatherInsight";
 
 export default function Home() {
   const autoCoords = useLocation();
@@ -117,6 +118,8 @@ export default function Home() {
           </div>
         </div>
 
+        <WeatherInsight weatherData={data} location={locationName} />
+
         {/* --- RE-ADDED: Metrics Grid --- */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <MetricCard
@@ -166,7 +169,7 @@ export default function Home() {
       </div>
     </main>
   );
-
+  
   function MetricCard({
     label,
     value,
