@@ -1,5 +1,17 @@
 import axios from "axios";
 
+export interface HourlyWeather {
+  time: string[];
+  temperature_2m: number[];
+  precipitation_probability?: number[];
+}
+
+export interface WeatherResponse {
+  current: any;
+  hourly: HourlyWeather;
+  daily: any;
+}
+
 const GEO_URL = "https://nominatim.openstreetmap.org/search";
 const WEATHER_URL = "https://api.open-meteo.com/v1/forecast";
 
@@ -9,7 +21,7 @@ export const getCoordinates = async (city: string) => {
   return res.data[0];
 };
 
-export const getWeather = async (lat: number, lon: number) => {
+export const getWeather = async (lat: number, lon: number): Promise<WeatherResponse> => {
   const res = await axios.get(WEATHER_URL, {
     params: {
       latitude: lat,
