@@ -1,0 +1,1 @@
+https://weatherintel.vercel.app/
