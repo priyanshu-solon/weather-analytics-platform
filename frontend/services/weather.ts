@@ -23,14 +23,18 @@ export const getCoordinates = async (city: string) => {
 };
 
 export const getWeather = async (lat: number, lon: number): Promise<WeatherResponse> => {
+  // 1. Ensure the numbers are valid and fixed to decimal places
+  const latitude = Number(lat).toFixed(4);
+  const longitude = Number(lon).toFixed(4);
+
   const res = await axios.get(WEATHER_URL, {
     params: {
-      latitude: lat,
-      longitude: lon,
-      current: "...", 
-      // Add wind_speed_10m to the hourly string below:
-      hourly: "temperature_2m,precipitation_probability,wind_speed_10m", 
-      daily: "...",
+      latitude,
+      longitude,
+      current: "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m,uv_index",
+      // Remove any spaces after commas in these strings
+      hourly: "temperature_2m,precipitation_probability,wind_speed_10m",
+      daily: "weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_sum",
       timezone: "auto",
     },
   });
