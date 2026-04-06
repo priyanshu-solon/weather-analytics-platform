@@ -13,7 +13,7 @@ export const useWeather = (coords: any) => {
     const load = async () => {
       // Using the axios-based service to get advanced data [cite: 37]
       const res = await getWeather(coords.lat, coords.lon);
-      setData(res);
+      setData(res as any);
     };
 
     load();

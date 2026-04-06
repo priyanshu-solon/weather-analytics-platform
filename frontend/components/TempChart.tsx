@@ -4,6 +4,8 @@
 interface LocalHourlyData {
   time: string[];
   temperature_2m: number[];
+  precipitation_probability?: number[];
+  wind_speed_10m?: number[]; // Adding the '?' makes it optional/safe
 }
 
 type TempChartProps = {

@@ -3,7 +3,8 @@ import axios from "axios";
 export interface HourlyWeather {
   time: string[];
   temperature_2m: number[];
-  precipitation_probability?: number[];
+  precipitation_probability: number[];
+  wind_speed_10m: number[]; // Add this line
 }
 
 export interface WeatherResponse {
@@ -26,9 +27,10 @@ export const getWeather = async (lat: number, lon: number): Promise<WeatherRespo
     params: {
       latitude: lat,
       longitude: lon,
-      current: "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m,uv_index",
-      hourly: "temperature_2m,precipitation_probability",
-      daily: "weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_sum",
+      current: "...", 
+      // Add wind_speed_10m to the hourly string below:
+      hourly: "temperature_2m,precipitation_probability,wind_speed_10m", 
+      daily: "...",
       timezone: "auto",
     },
   });
