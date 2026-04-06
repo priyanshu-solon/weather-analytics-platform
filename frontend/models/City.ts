@@ -1,3 +1,4 @@
+
 import mongoose, { Schema, model, models } from "mongoose";
 
 const CitySchema = new Schema({
