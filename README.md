@@ -2,7 +2,10 @@ Weather Analytics Platform
 A sleek, data-driven web application that provides real-time weather insights and historical trends. Built to help users make informed decisions based on visualized weather analytics.
 
 🚀 Live Demo
+
 [View the live site here](https://priyanshu-solon-weathernow.netlify.app/)
+
+[NextJS + Versel + AI live site here](https://weatherintel.vercel.app/)
 
 📌 Features
 Real-time Weather Data: Get instant updates on temperature, humidity, wind speed, and atmospheric pressure.
