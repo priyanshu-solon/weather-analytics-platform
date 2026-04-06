@@ -1,39 +1,43 @@
 "use client";
 
-import type { HourlyWeather } from "@/services/weather";
+// We define the shape here locally so we don't have to import it
+interface LocalHourlyData {
+  time: string[];
+  temperature_2m: number[];
+}
 
-// Fix: Correctly define the object structure for the component props
 type TempChartProps = {
-  data: HourlyWeather;
+  data: LocalHourlyData;
 };
 
 export default function TempChart({ data }: TempChartProps) {
-  // Safety check: Ensure data exists and has the expected arrays
+  // 1. Safety check to prevent "undefined" errors during build
   if (!data || !data.time || !data.temperature_2m) {
     return (
-      <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-        <p className="text-center text-sm text-gray-400">No temperature data available</p>
+      <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center text-xs text-gray-500">
+        Waiting for telemetry...
       </div>
     );
   }
 
-  // Slice the first 12 hours for a cleaner view
+  // 2. Map the data safely
   const chartData = data.time.slice(0, 12).map((t: string, i: number) => ({
     time: t.includes("T") ? t.split("T")[1] : t,
     temp: data.temperature_2m[i] ?? 0,
   }));
 
   return (
-    <div className="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
-      <h2 className="font-semibold mb-3 text-sm text-blue-200 uppercase tracking-wider">
-        Hourly Temperature
+    <div className="bg-black/20 p-4 rounded-[2rem] border border-white/10 backdrop-blur-md">
+      <h2 className="text-[10px] font-bold uppercase text-blue-300 tracking-[0.2em] mb-4">
+        12-Hour Forecast
       </h2>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {chartData.map((item, i) => (
-          <div key={i} className="flex justify-between items-center text-sm border-b border-white/5 pb-1 last:border-0">
-            <span className="text-gray-400">{item.time}</span>
-            <span className="font-mono text-blue-100">{item.temp}°C</span>
+          <div key={i} className="flex justify-between items-center text-xs group">
+            <span className="text-gray-400 group-hover:text-white transition-colors">{item.time}</span>
+            <div className="h-[1px] flex-1 mx-4 bg-white/5" />
+            <span className="font-mono font-bold text-blue-100">{item.temp}°C</span>
           </div>
         ))}
       </div>
