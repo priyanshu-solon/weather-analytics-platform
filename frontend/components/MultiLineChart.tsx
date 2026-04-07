@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ResponsiveContainer,
   LineChart,
@@ -8,16 +10,26 @@ import {
   CartesianGrid,
 } from "recharts";
 
-export default function MultiLineChart({ hourly }: any) {
+interface MultiLineChartProps {
+  hourly: any;
+  isCelsius: boolean;
+}
+
+export default function MultiLineChart({ hourly, isCelsius }: MultiLineChartProps) {
   if (!hourly) return null;
 
- // Inside your .map function, add explicit types to fix the (item, i) errors
-const chartData = hourly.time.slice(0, 24).map((t: string, i: number) => ({
-    time: new Date(t).getHours() + ":00",
-    Temp: Math.round(hourly.temperature_2m[i]),
-    Rain: hourly.precipitation_probability[i],
-    Wind: hourly.wind_speed_10m ? Math.round(hourly.wind_speed_10m[i]) : 5,
-}));
+  const chartData = hourly.time.slice(0, 24).map((t: string, i: number) => {
+    // Perform conversion if isCelsius is false
+    const rawTemp = hourly.temperature_2m[i];
+    const convertedTemp = isCelsius ? rawTemp : (rawTemp * 9) / 5 + 32;
+
+    return {
+      time: new Date(t).getHours() + ":00",
+      Temp: Math.round(convertedTemp),
+      Rain: hourly.precipitation_probability ? hourly.precipitation_probability[i] : 0,
+      Wind: hourly.wind_speed_10m ? Math.round(hourly.wind_speed_10m[i]) : 5,
+    };
+  });
 
   return (
     <div className="w-full h-[250px] sm:h-[300px] md:h-[350px]">
@@ -44,6 +56,7 @@ const chartData = hourly.time.slice(0, 24).map((t: string, i: number) => ({
             fontSize={10}
             tickLine={false}
             axisLine={false}
+            domain={['auto', 'auto']}
           />
 
           <Tooltip
@@ -53,6 +66,13 @@ const chartData = hourly.time.slice(0, 24).map((t: string, i: number) => ({
               borderRadius: "12px",
             }}
             itemStyle={{ fontSize: "12px", fontWeight: "bold" }}
+            // Added formatter to show correct units on hover
+            formatter={(value: any, name: string) => {
+              if (name === "Temp") return [`${value}°${isCelsius ? "C" : "F"}`, "Temperature"];
+              if (name === "Wind") return [`${value} km/h`, "Wind Speed"];
+              if (name === "Rain") return [`${value}%`, "Rain Probability"];
+              return [value, name];
+            }}
           />
 
           {/* Temperature */}
@@ -60,8 +80,9 @@ const chartData = hourly.time.slice(0, 24).map((t: string, i: number) => ({
             type="monotone"
             dataKey="Temp"
             stroke="#fbbf24"
-            strokeWidth={2}
+            strokeWidth={3}
             dot={false}
+            animationDuration={1000}
           />
 
           {/* Rain */}

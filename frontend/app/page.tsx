@@ -18,6 +18,9 @@ export default function Home() {
   const [searchCoords, setSearchCoords] = useState<any>(null);
   const [locationName, setLocationName] = useState("Bengaluru");
   const [pinnedCities, setPinnedCities] = useState<any[]>([]);
+  
+  // --- NEW: Unit State ---
+  const [isCelsius, setIsCelsius] = useState(true);
 
   const coords = searchCoords || autoCoords;
   const data = useWeather(searchCoords || autoCoords) as WeatherData | null;
@@ -30,6 +33,12 @@ export default function Home() {
         if (json.success) setPinnedCities(json.data);
       });
   }, []);
+
+  // --- NEW: Conversion Helper ---
+  const convertTemp = (temp: number) => {
+    if (isCelsius) return Math.round(temp);
+    return Math.round((temp * 9) / 5 + 32);
+  };
 
   const handlePin = async () => {
     if (!data || pinnedCities.some((c) => c.name === locationName)) return;
@@ -55,56 +64,78 @@ export default function Home() {
     }
   };
 
+  const handleLocationSelect = (locationData: any) => {
+    if (!locationData || !locationData.lat || !locationData.lon) {
+      alert("❌ Invalid location selected. Please try again.");
+      return;
+    }
+
+    // Extract name and country
+    const addr = locationData.address;
+    const city = addr.city || addr.town || addr.village || addr.suburb || "Unknown";
+    const country = addr.country || "";
+    
+    setSearchCoords({ lat: parseFloat(locationData.lat), lon: parseFloat(locationData.lon) });
+    setLocationName(`${city}, ${country}`); 
+  };
+
   if (!data)
     return (
-      <div className="h-screen bg-slate-950 flex items-center justify-center text-blue-500 font-bold animate-pulse">
+      <div className="h-screen bg-slate-950 flex items-center justify-center text-blue-500 font-bold animate-pulse tracking-[0.2em]">
         SYNCING SATELLITE...
       </div>
     );
 
-  // Inside your Home component return statement...
-
   return (
     <main
-      className={`min-h-screen bg-gradient-to-br ${getWeatherMood(data.current.weather_code)} p-6 text-white transition-all`}
+      className={`min-h-screen bg-gradient-to-br ${getWeatherMood(data.current.weather_code)} p-6 text-white transition-all duration-700`}
     >
       <div className="max-w-7xl mx-auto space-y-8">
+        
         {/* Header & Search */}
-        <header className="flex flex-col md:flex-row justify-between items-center gap-4 bg-black/20 p-4 rounded-2xl backdrop-blur-md">
-          <h1 className="text-xl font-black italic tracking-tighter">
-            WEATHER INTEL
-          </h1>
-          <SearchBar
-            onSearch={async (city) => {
-              const loc = await getCoordinates(city);
-              setSearchCoords({ lat: loc.lat, lon: loc.lon });
-              setLocationName(loc.display_name.split(",")[0]);
-            }}
-          />
+        <header className="relative z-[100] flex flex-col md:flex-row justify-between items-center gap-4 bg-black/20 p-4 rounded-2xl backdrop-blur-md border border-white/10">
+          <div className="flex items-center gap-6">
+            <h1 className="text-xl font-black italic tracking-tighter">
+              WEATHER INTEL
+            </h1>
+            {/* --- NEW: Unit Toggle Button --- */}
+            <button 
+              onClick={() => setIsCelsius(!isCelsius)}
+              className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all"
+            >
+              Switch to °{isCelsius ? "F" : "C"}
+            </button>
+          </div>
+          <SearchBar onSearch={handleLocationSelect} />
         </header>
 
         {/* Top Section: Hero & Chart */}
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="bg-white/10 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-xl flex flex-col justify-between">
+          <div className="bg-white/10 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-xl flex flex-col justify-between shadow-2xl">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold">{locationName}</h2>
+                <h2 className="text-3xl font-bold leading-tight">{locationName}</h2>
                 <p className="opacity-60 text-sm">Live Intelligence</p>
               </div>
               <button
                 onClick={handlePin}
-                className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-all"
+                className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-all border border-white/5"
               >
                 {pinnedCities.some((c) => c.name === locationName)
                   ? "✔️"
                   : "📍"}
               </button>
             </div>
-            <div className="text-8xl font-black py-10 tracking-tighter">
-              {Math.round(data.current.temperature_2m)}°
+            
+            {/* --- UPDATED: Hero Temperature --- */}
+            <div className="text-8xl font-black py-10 tracking-tighter flex items-start">
+              {convertTemp(data.current.temperature_2m)}
+              <span className="text-3xl font-light mt-4 opacity-40">°{isCelsius ? "C" : "F"}</span>
             </div>
+
+            {/* --- UPDATED: Feels Like --- */}
             <div className="bg-black/20 p-4 rounded-2xl text-sm border border-white/5">
-              Feels like {Math.round(data.current.apparent_temperature)}°C
+              Feels like {convertTemp(data.current.apparent_temperature)}°{isCelsius ? "C" : "F"}
             </div>
           </div>
 
@@ -113,14 +144,15 @@ export default function Home() {
               24h Atmospheric Trends
             </h3>
             <div className="h-[350px] w-full">
-              <MultiLineChart hourly={data.hourly} />
+              {/* --- UPDATED: Pass unit state to chart --- */}
+              <MultiLineChart hourly={data.hourly} isCelsius={isCelsius} />
             </div>
           </div>
         </div>
 
         <WeatherInsight weatherData={data} location={locationName} />
 
-        {/* --- RE-ADDED: Metrics Grid --- */}
+        {/* Metrics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <MetricCard
             label="Humidity"
@@ -159,11 +191,12 @@ export default function Home() {
           />
         </div>
 
-        {/* --- RE-ADDED: Forecast Section --- */}
+        {/* Forecast Section */}
         <div className="bg-white/5 p-6 rounded-[2.5rem] backdrop-blur-sm border border-white/5">
           <h3 className="text-xs font-bold uppercase mb-6 opacity-50 tracking-widest">
             7-Day Extended Forecast
           </h3>
+          {/* --- NOTE: ForecastList will also need internal conversion if you want it in F --- */}
           <ForecastList daily={data.daily} />
         </div>
       </div>
