@@ -197,7 +197,7 @@ export default function Home() {
             7-Day Extended Forecast
           </h3>
           {/* --- NOTE: ForecastList will also need internal conversion if you want it in F --- */}
-          <ForecastList daily={data.daily} />
+          <ForecastList daily={data.daily} isCelsius={isCelsius} />
         </div>
       </div>
     </main>
