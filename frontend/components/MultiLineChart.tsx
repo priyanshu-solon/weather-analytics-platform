@@ -60,20 +60,21 @@ export default function MultiLineChart({ hourly, isCelsius }: MultiLineChartProp
           />
 
           <Tooltip
-            contentStyle={{
-              background: "#0f172a",
-              border: "1px solid #ffffff10",
-              borderRadius: "12px",
-            }}
-            itemStyle={{ fontSize: "12px", fontWeight: "bold" }}
-            // Added formatter to show correct units on hover
-            formatter={(value: any, name: string) => {
-              if (name === "Temp") return [`${value}°${isCelsius ? "C" : "F"}`, "Temperature"];
-              if (name === "Wind") return [`${value} km/h`, "Wind Speed"];
-              if (name === "Rain") return [`${value}%`, "Rain Probability"];
-              return [value, name];
-            }}
-          />
+  contentStyle={{
+    background: "#0f172a",
+    border: "1px solid #ffffff10",
+    borderRadius: "12px",
+  }}
+  itemStyle={{ fontSize: "12px", fontWeight: "bold" }}
+  
+  // FIX: Change 'name: string' to 'name: any' or 'name: string | undefined'
+  formatter={(value: any, name: any) => {
+    if (name === "Temp") return [`${value}°${isCelsius ? "C" : "F"}`, "Temperature"];
+    if (name === "Wind") return [`${value} km/h`, "Wind Speed"];
+    if (name === "Rain") return [`${value}%`, "Rain Probability"];
+    return [value, name];
+  }}
+/>
 
           {/* Temperature */}
           <Line
